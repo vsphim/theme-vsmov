@@ -1,0 +1,34 @@
+{
+    "name": "vsmov/theme-phim",
+    "version": "1.0.0",
+    "description": "VsMov Phim theme",
+    "type": "library",
+    "authors": [
+        {
+            "name": "vsmov",
+            "email": "vsmov@gmail.com"
+        }
+    ],
+    "require": {
+        "laravel/framework": "^6|^7|^8",
+        "ckfinder/ckfinder-laravel-package": "v3.5.2.1",
+        "vsmov/vsmov-core": "^1.0.0",
+        "jenssegers/agent": "^2.6"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "VsMov\\ThemePhim\\": "src/",
+            "VsMov\\ThemePhim\\Database\\Factories\\": "database/factories/",
+            "VsMov\\ThemePhim\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "VsMov\\ThemePhim\\ThemePhimServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}

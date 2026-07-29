@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Ảnh đại diện mặc định</title>
+  <defs>
+    <linearGradient id="background" x1="20" y1="12" x2="108" y2="116" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3f4254"/>
+      <stop offset="1" stop-color="#20222e"/>
+    </linearGradient>
+    <linearGradient id="person" x1="64" y1="27" x2="64" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d8d9df"/>
+      <stop offset="1" stop-color="#9296a5"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="64" fill="url(#background)"/>
+  <circle cx="64" cy="45" r="23" fill="url(#person)"/>
+  <path d="M22 116c2-28 19-45 42-45s40 17 42 45H22Z" fill="url(#person)"/>
+  <circle cx="64" cy="64" r="61" fill="none" stroke="#f58a1f" stroke-opacity=".35" stroke-width="3"/>
+</svg>
