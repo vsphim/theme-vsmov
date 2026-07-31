@@ -2,10 +2,7 @@
 
 namespace VsMov\ThemePhim;
 
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\ServiceProvider;
-use VsMov\Core\Models\Theme;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class ThemePhimServiceProvider extends ServiceProvider
 {
@@ -21,48 +18,6 @@ class ThemePhimServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../resources/assets' => public_path('themes/phim')
         ], 'phim-assets');
-
-        $this->clearStaleStateWhenThemeIsActivated();
-    }
-
-    /**
-     * Theme routes are selected while the core service provider is booting.
-     * When routes or the active theme are cached, switching themes in the
-     * admin panel can update the database while the previous theme keeps
-     * serving requests. Clear those caches immediately before Phim is saved
-     * as the active theme so the next request loads its routes and options.
-     */
-    protected function clearStaleStateWhenThemeIsActivated()
-    {
-        Theme::saving(function (Theme $theme) {
-            if (strtolower((string) $theme->name) !== 'phim' || !(bool) $theme->active) {
-                return;
-            }
-
-            $isActiveInDatabase = $theme->exists
-                ? (bool) $theme->newQuery()->whereKey($theme->getKey())->value('active')
-                : false;
-
-            if ($isActiveInDatabase && !$theme->isDirty('active')) {
-                return;
-            }
-
-            Cache::forget('site.theme.active');
-
-            if ($this->app->routesAreCached()) {
-                try {
-                    Artisan::call('route:clear');
-                } catch (\Throwable $exception) {
-                    report($exception);
-                }
-            }
-        });
-
-        Theme::saved(function (Theme $theme) {
-            if (strtolower((string) $theme->name) === 'phim' && (bool) $theme->active) {
-                Cache::forget('site.theme.active');
-            }
-        });
     }
 
     protected function setupDefaultThemeCustomizer()
