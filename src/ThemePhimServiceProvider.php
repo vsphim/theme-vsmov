@@ -2,7 +2,10 @@
 
 namespace VsMov\ThemePhim;
 
+use Illuminate\Foundation\Bootstrap\BootProviders;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\DB;
+use VsMov\ThemePhim\Controllers\ThemePhimController;
 
 class ThemePhimServiceProvider extends ServiceProvider
 {
@@ -18,6 +21,44 @@ class ThemePhimServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../resources/assets' => public_path('themes/phim')
         ], 'phim-assets');
+
+        $this->ensureActiveThemeRoutesAreLoaded();
+    }
+
+    /**
+     * The core package loads an active theme's route file during its booted
+     * callback. On cached or older installations that step can be skipped
+     * silently, leaving the previous theme's routes in the router. Check the
+     * final route collection after every provider has booted and only load
+     * this package's routes when Phim is active but its routes are missing.
+     */
+    protected function ensureActiveThemeRoutesAreLoaded()
+    {
+        $this->app->afterBootstrapping(BootProviders::class, function () {
+            try {
+                $activeThemeName = DB::table('themes')
+                    ->where('active', true)
+                    ->value('name');
+            } catch (\Throwable $exception) {
+                return;
+            }
+
+            if (strtolower((string) $activeThemeName) !== 'phim') {
+                return;
+            }
+
+            $movieRoute = $this->app['router']->getRoutes()->getByName('movies.show');
+            $expectedAction = ThemePhimController::class . '@getMovieOverview';
+
+            if ($movieRoute && ltrim($movieRoute->getActionName(), '\\') === $expectedAction) {
+                return;
+            }
+
+            require __DIR__ . '/../routes/web.php';
+
+            $this->app['router']->getRoutes()->refreshNameLookups();
+            $this->app['router']->getRoutes()->refreshActionLookups();
+        });
     }
 
     protected function setupDefaultThemeCustomizer()
